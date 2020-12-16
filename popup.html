@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link rel="stylesheet" type="text/css" href="main.css">
+</head>
+
+<body>
+  <main id='popup'>
+    <header>
+      <h1>AAAAAAA</h1>
+    </header>
+    <section>
+      <label>Site</label>
+      <input id="site_input" name="site_input">
+      <br>
+      <label>Iterations</label>
+      <input id="iterations_input" name="iterations_input" type="number">
+      <button class='button full' id="execute_button">Brute Force</button>
+    </section>
+    <section>
+      <label>Pings: <span id="pings_stat"></span></label><br>
+      <label>Hits: <span id="hits_stat"></span> (<span id="hits_p_stat"></span>%)</label><br>
+      <label>Misses: <span id="miss_stat"></span> (<span id="miss_p_stat"></span>%)</label>
+    </section>
+    <script type="text/javascript" src="popup.js"></script>
+  </main>
+</body>
+
+</html>
