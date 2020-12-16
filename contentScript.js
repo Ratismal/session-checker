@@ -6,21 +6,15 @@ function inject(fn) {
 
 function test() {
   console.log('Waiting for Granify to exist...');
+  let start = Date.now();
   let interval = setInterval(function () {
     if (window.Granify) {
-      console.log('Registering trackCart listener...');
-      Granify('on', 'trackCart:called', function () {
-        console.log('trackCart has been called');
-        setTimeout(function () {
-          try {
-            let payload = JSON.stringify(Granify.synchronousGetSharedData(Granify.storage.TRACK_PRODUCT));
-            window.postMessage({ type: 'GPAGE', payload });
-          } catch (err) {
-            window.postMessage({ type: 'GPAGE', error: err.stack });
-          }
-        }, 500);
+      window.postMessage({ type: 'GPAGE', payload: true });
 
-      });
+      clearInterval(interval);
+    } else if (Date.now() - start >= 20000) {
+      console.log('Waited too long, giving up...');
+      window.postMessage({ type: 'GPAGE', payload: false });
       clearInterval(interval);
     }
   }, 10);

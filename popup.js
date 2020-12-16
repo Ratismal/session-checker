@@ -2,6 +2,13 @@ const button = document.getElementById('execute_button');
 const site = document.getElementById('site_input');
 const iterations = document.getElementById('iterations_input');
 
+if (localStorage.getItem('site')) {
+  site.value = localStorage.getItem('site');
+}
+if (localStorage.getItem('iterations')) {
+  iterations.value = localStorage.getItem('iterations');
+}
+
 let state = null;
 
 let executing = false;
@@ -38,6 +45,8 @@ function modifyForm() {
 }
 
 function execute() {
+  localStorage.setItem('site', site.value);
+  localStorage.setItem('iterations', iterations.value);
   state.executing = true;
   modifyForm();
   let i = Number(iterations.value);

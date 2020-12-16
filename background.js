@@ -29,6 +29,7 @@ class Actions {
   constructor() {
     this.state = new State(null);
     this.resultRes = null;
+    this.resultRej = null;
   }
 
   sendUpdate() {
@@ -37,29 +38,35 @@ class Actions {
 
   async execute(request, sender, sendResponse) {
     console.log(request);
-    this.state = new State(request.site, request.iterations);
+    if (!this.state.site || this.state.site !== request.site) {
+      this.state = new State(request.site, request.iterations);
+    } else {
+      console.log('Retaining previous state');
+      this.state.iterations = request.iterations;
+    }
     this.state.executing = true;
 
     for (let i = 0; i < this.state.iterations; i++) {
       console.group('Iteration', i);
       const window = await createWindow({ url: this.state.site, incognito: true });
-      // const window = await createWindow({ url: "https://aldoshoes.com", incognito: true });
-      console.log(window);
-      // await sleep();
       let p = new Promise((res, rej) => {
         this.resultRes = res;
         this.resultRej = rej;
       });
-      const response = await executeScript(window.tabs[0].id, {
+      await executeScript(window.tabs[0].id, {
         file: 'contentScript.js'
       });
       let result = await p;
 
-      if (result === '{}') this.state.miss++;
-      else this.state.hits++;
+      if (result === false) {
+        this.state.miss++;
+      }
+      else {
+        this.state.hits++;
+        await removeWindow(window.id);
+      }
       console.log('Result:', result);
 
-      await removeWindow(window.id);
       this.sendUpdate();
       await sleep(1500);
       console.groupEnd();
@@ -69,7 +76,8 @@ class Actions {
   }
 
   result(request, sender, sendResponse) {
-    if (this.resultRes && request.payload) {
+    console.log(request);
+    if (this.resultRes && typeof request.payload !== undefined) {
       this.resultRes(request.payload);
     } else if (this.resultRej && request.error) {
       this.resultRej(result.error);
